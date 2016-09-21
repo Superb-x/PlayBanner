@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{margin: 0;padding: 0;}
+        li{list-style:none;}
+        #box{width: 820px;height: 600px;margin: 100px auto;}
+        #list li{width: 180px;height: 180px;margin: 10px;float: left;border: 1px solid greenyellow;}
+        #list .active{border:1px dashed #008bf6 }
+        #list img{width: 100%;height: 100%;}
+    </style>
+
+</head>
+<body>
+<div id="box">
+    <ul id="list">
+        <li><img src="img/Logo/1.png"/></li>
+        <li><img src="img/Logo/2.png"/></li>
+        <li><img src="img/Logo/3.png"/></li>
+        <li><img src="img/Logo/4.png"/></li>
+        <li><img src="img/Logo/5.png"/></li>
+        <li><img src="img/Logo/6.png"/></li>
+        <li><img src="img/Logo/7.png"/></li>
+        <li><img src="img/Logo/8.png"/></li>
+        <li><img src="img/Logo/9.png"/></li>
+        <li><img src="img/Logo/10.png"/></li>
+        <li><img src="img/Logo/11.png"/></li>
+        <li><img src="img/Logo/12.png"/></li>
+    </ul>
+</div>
+<script src="js/base.js"></script>
+<script src="js/move.js"></script>
+<script>
+    var oUl = $("list");
+    var aLi = oUl.children;
+    console.log(aLi);
+    var len = aLi.length;
+    var zIndex = 1;
+    var arrList = [];
+    /*布局转换*/
+   for(var i=0;i<len;i++){
+        aLi[i].style.left = aLi[i].offsetLeft + "px";
+        aLi[i].style.top = aLi[i].offsetTop + "px";
+        arrList.push({"left":aLi[i].offsetLeft,"top":aLi[i].offsetTop});
+    }
+//    console.log(arrList);
+    for(var i=0;i<len;i++){
+        aLi[i].style.margin = 0;
+        aLi[i].style.position = "absolute";
+    }
+    /*给所有的图片添加拖拽*/
+    for(var i=0;i<len;i++){
+        fnDrag(aLi[i],i);
+    }
+    
+    //拖拽的函数
+    function fnDrag(obj,index) {
+        obj.onmousedown = function (event) {
+            event = event || window.event;
+            var disX = event.offsetX;
+            var disY = event.offsetY;
+            this.style.zIndex = zIndex++;
+
+            iNow = -1;
+            console.log(iNow);
+            document.onmousemove = function (event) {
+                event = event || window.event;
+                /*给图片设置left和top*/
+                var mX = event.clientX;
+                var mY = event.clientY;
+                obj.style.left = mX - disX + "px";
+                obj.style.top = mY - disY + "px";
+                /*需要判断obj有没有碰撞*/
+
+                iNow = fnPZ(obj);
+                /*碰撞到时改变边框的颜色*/
+                for(var i=0;i<len;i++){
+                    aLi[i].className = "";
+                }
+                if(iNow != -1){
+                    aLi[iNow].className = "active";
+                }
+                /*阻止图片拖动的默认事件*/
+                return false;
+            }
+
+            document.onmouseup = function () {
+                document.onmousemove = null;
+                document.onmouseup = null;
+                //保存图片坐标
+//                fnMove1(obj,arrList[index]);
+                //arrList[index] ==  {left:arrList[index].left,top:arrList[index].top}这两个表达式的内容其实是一样的
+                //等于-1的时候表示的是没有发生碰撞
+                if(iNow==-1){
+                    fnMove1(obj,arrList[index]);
+//                    console.log(arrList[index])
+                }else{
+                    //交换位置
+                    fnMove1(obj,arrList[iNow]);
+                    fnMove1(aLi[iNow],arrList[index]);
+                    /*arrList的坐标却没有变换，数组中的坐标却没有变化*/
+
+                    //arrList
+                    //index => iNow
+                    //iNow => index
+                    var temp = arrList[index];
+                    arrList[index] = arrList[iNow];
+                    arrList[iNow] = temp;
+
+                    //保存数据的那个数组中的位置要变换不然会出现bug
+                    for(var i=0;i<len;i++){
+                        aLi[i].className = "";
+                    }
+
+                }
+            };
+        return false;
+        }
+    }
+
+    /*碰撞的函数*/
+    function fnPZ(obj) {
+
+        var objL = obj.offsetLeft;
+        var objT = obj.offsetTop;
+        var objW = obj.offsetWidth;
+        var objH = obj.offsetHeight;
+
+        var min = 9999;
+        var index = -1;
+
+        /*跟所有的图片对比有没有发生碰撞*/
+        for(var i=0;i<len;i++){
+
+            if(aLi[i] == obj) continue;
+            var boxL = aLi[i].offsetLeft;
+            var boxT = aLi[i].offsetTop;
+            var boxW = aLi[i].offsetWidth;
+            var boxH = aLi[i].offsetHeight;
+
+            //objL + objW < boxL 左
+            //objT>boxH + boxT 下
+            //objL > boxL + boxW 右
+            //objT + objH < boxT 上
+
+            if(objL + objW < boxL || objT>boxH + boxT || objL > boxL + boxW || objT + objH < boxT){
+                /*没有碰到的时候*/
+            }else {
+                console.log("碰到了"+i);
+                var a = boxL - objL;
+                var b = boxT - objT;
+                var l = Math.sqrt(a*a + b*b);
+
+                /*求最小值*/
+                if(l<min){
+                    min = l;
+                    index = i;
+                }
+            }
+        }
+        console.log(index);
+        return index;
+
+    }
+</script>
+</body>
+</html>
