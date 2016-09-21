@@ -1,0 +1,105 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>无标题文档</title>
+    <!--<link rel="stylesheet" type="text/css" href="../css/main.css">-->
+    <style>
+        *{margin: 0;padding: 0;}
+        body{width: 100%;height: 100%;}
+        .btn{width:60px;height:30px;line-height: 30px;margin: 0px auto;}
+        #box{width: 200px;height: 200px;background-color: #000;position: absolute;top:40px;left: 0px;opacity: 0.3; filter:alpha(opacity=30);}
+
+        #ul1 {padding: 0; width: 330px; margin: 100px auto 0; position: relative;}
+        li {width: 100px; height: 100px; background: red; float: left; list-style: none; margin: 10px 0 0 10px;overflow:hidden;cursor: pointer;}
+        li img{width:100%;height:100%;display:block;}
+    </style>
+    <!--<script src="../js/main.js"></script>-->
+    <script>
+        window.onload = function() {
+            var Oul =document.getElementById('ul1');
+            var aLi=Oul.getElementsByTagName('li');
+            var arr=[];
+            for (var i=0; i<aLi.length; i++) {
+                arr.push( {left: aLi[i].offsetLeft, top: aLi[i].offsetTop} );
+            }
+            for(var i=0;i<aLi.length;i++){
+                aLi[i].index=i;
+                aLi[i].style.position='absolute';
+                aLi[i].style.left=arr[i].left+'px';
+                aLi[i].style.top=arr[i].top+'px';
+            }
+            for(var i=0;i<aLi.length;i++){
+                aLi[i].onmouseover=function(){
+                    this.style.zIndex=1;
+                    console.log(this.style.zIndex);
+                    move(this,{width:150,height:150,left:arr[this.index].left-25,top:arr[this.index].top-25,})
+                }
+                aLi[i].onmouseout=function(){
+                    this.style.zIndex=0;
+                    console.log(this.style.zIndex);
+                    move(this,{width:100,height:100,left:arr[this.index].left,top:arr[this.index].top,})
+                }
+            }
+        }
+        function css(obj,styleValue){
+            return window.getComputedStyle ? window.getComputedStyle(obj,null)[styleValue]:obj.currentStyle[styleValue];
+        }// 获取元素属性
+        function move(obj, json, fn) {
+            clearInterval(obj.iTimer);
+            var iCur = 0;
+            var iSpeed = 0;
+
+            obj.iTimer = setInterval(function() {
+
+                var iBtn = true;
+
+                for ( var attr in json ) {
+
+                    var iTarget = json[attr];
+
+                    if (attr == 'opacity') {
+                        iCur = Math.round(css( obj, 'opacity' ) * 100);
+                    } else {
+                        iCur = parseInt(css(obj, attr));
+                    }
+
+                    iSpeed = ( iTarget - iCur ) / 8;
+                    iSpeed = iSpeed > 0 ? Math.ceil(iSpeed) : Math.floor(iSpeed);
+
+                    if (iCur != iTarget) {
+                        iBtn = false;
+                        if (attr == 'opacity') {
+                            obj.style.opacity = (iCur + iSpeed) / 100;
+                            obj.style.filter = 'alpha(opacity='+ (iCur + iSpeed) +')';
+                        } else {
+                            obj.style[attr] = iCur + iSpeed + 'px';
+                        }
+                    }
+
+                }
+
+                if (iBtn) {
+                    clearInterval(obj.iTimer);
+                    fn && fn.call(obj);
+                }
+
+            }, 30);
+        }//缓冲运动
+    </script>
+</head>
+
+<body>
+<ul id="ul1">
+    <li><img src="img/quezland.jpg"></li>
+    <li><img src="img/quezland.jpg"></li>
+    <li><img src="img/quezland.jpg"></li>
+    <li><img src="img/quezland.jpg"></li>
+    <li><img src="img/quezland.jpg"></li>
+    <li><img src="img/quezland.jpg"></li>
+    <li><img src="img/quezland.jpg"></li>
+    <li><img src="img/quezland.jpg"></li>
+    <li><img src="img/quezland.jpg"></li>
+</ul>
+</body>
+</html>
