@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{margin: 0;padding: 0;}
+        li{list-style: none;}
+        #wrap{width: 560px;height: 300px;position: relative;border: 3px solid #999;margin: 0 auto;overflow: hidden;}
+        #pic-wrap{width: 2800px;height: 300px;position: absolute;}
+        #pic-wrap li{float: left;}
+        #pic-btn{width: 535px;height: 50px;position: absolute;bottom: 10px;margin-left: 25px;}
+        #pic-btn img{width: 100%;height: 100%;cursor: pointer;}
+        #pic-btn li{width: 80px;height: 50px;margin-left:15px;float: left;border: 2px solid #fff;}
+        .on{width:50px;height:50px;background:rgba(0,0,0,.3);position: absolute;
+            top: 50%;
+            margin-top:-25px;
+            color: #ccc;
+            line-height: 50px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 36px;
+            display: none;
+        }
+        #prev{left: 0}
+        #next{right: 0}
+        #wrap:hover .on{display: block;}
+        .on:hover{background: rgba(0,0,0,.5);text-shadow: 0 0 3px;color: #fff;}
+
+        /*点击时更换的样式*/
+        #pic-btn .active{border-color: transparent;}
+    </style>
+</head>
+<body>
+<div id="wrap">
+    <ul id="pic-wrap">
+        <li><img src="img/1.jpg"/></li>
+        <li><img src="img/2.jpg"/></li>
+        <li><img src="img/3.jpg"/></li>
+        <li><img src="img/4.jpg"/></li>
+        <li><img src="img/5.jpg"/></li>
+    </ul>
+    <ul id="pic-btn">
+        <li><img src="img/1.jpg"/></li>
+        <li><img src="img/2.jpg"/></li>
+        <li><img src="img/3.jpg"/></li>
+        <li><img src="img/4.jpg"/></li>
+        <li><img src="img/5.jpg"/></li>
+    </ul>
+    <a id="prev" class="on">&lt</a>
+    <a id="next" class="on">&gt</a>
+</div>
+<script src="js/move.js"></script>
+<script src="js/base.js"></script>
+<script>
+    var oWrap = document.getElementById("wrap");
+    var oPicWrap = document.getElementById("pic-wrap");
+    var picArr = oPicWrap.getElementsByTagName("li");
+//    console.log(picArr);
+    var oPicBtn = document.getElementById("pic-btn");
+    var btnArr = oPicBtn.getElementsByTagName("li");
+    var oPrev = document.getElementById("prev");
+    var oNext = document.getElementById("next");
+    var len = picArr.length;
+    var index = 0;
+    var timer;
+
+    //样式初始化
+    picArr[index].style.display = "block";
+    btnArr[index].className = "active";
+    //之后给每个图片添加点击事件
+    for(var i=0;i<len;i++){
+        btnArr[i].index = i;
+        btnArr[i].onclick = function () {
+            index = this.index;
+            for(var j=0;j<len;j++){
+                btnArr[j].className = "";
+            }
+            console.log(this)
+            btnArr[this.index].className = "active";
+            oPicWrap.style.left = fnMove1(oPicWrap,{"left":-index*560}) + "px";
+        }
+    }
+    /*清除掉小按钮（图片）边框的方法*/
+    function remove() {
+        for(var j=0;j<len;j++){
+            btnArr[j].className = "";
+        }
+        btnArr[this.index].className = "active";
+    }
+    //点击右边
+    oNext.onclick = function () {
+        //判断下标，如果大于长度了，就让下标归零
+            index++;
+        if(index > len - 1){
+            index = 0;
+        }
+        oPicWrap.style.left = fnMove1(oPicWrap,{"left":-index*560}) + "px";
+        remove();
+    }
+
+    //点击左边
+    oPrev.onclick = function () {
+        //判断下标   如果下标小于零就让其编程长度-1（即图片组下标），
+        index--;
+        if(index < 0){
+            index = len - 1;
+        }
+        oPicWrap.style.left = fnMove1(oPicWrap,{"left":-index*560}) + "px";
+        remove();
+    }
+
+
+    //自动播放
+    function autoPlay() {
+        //简单理解就是让其自动执行下一步的操作
+       timer = setInterval(function () {
+            index++;
+            if (index > len -1){
+                index = 0;
+            }
+           oPicWrap.style.left = fnMove1(oPicWrap,{"left":-index*560}) + "px";
+           remove();
+        },2500)
+    }
+    autoPlay();
+    function stop() {
+        clearInterval(timer);
+    }
+    oWrap.onmouseover = stop;
+    oWrap.onmouseout = autoPlay;
+</script>
+</body>
+</html>
