@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{margin: 0;padding: 0;}
+        a{text-decoration: none;color: #000;}
+        h1{width: 300px;padding: 10px;margin: 0 auto;}
+        #box{width: 300px;height: 365px;margin: 0 auto 0;padding: 10px;border: 1px solid #ccc;overflow: hidden;position: relative}
+        li{list-style: none;border-bottom: 1px dashed #ccc;padding: 14px;}
+        #list{width: 300px;height:auto;position: absolute;}
+    </style>
+    <script src="../../jquery-1.7.2.min.js"></script>
+</head>
+<body>
+    <h1>新闻中心</h1>
+    <div id="box">
+        <ul id="list">
+            <li><a href="###">臣本布衣</a></li>
+            <li><a href="###">躬耕于南阳</a></li>
+            <li><a href="###">苟全性命于乱世</a></li>
+            <li><a href="###">不求闻达于诸侯</a></li>
+            <li><a href="###">先帝不以臣卑鄙，猥自枉屈</a></li>
+            <li><a href="###">三顾臣于草庐之中</a></li>
+            <li><a href="###">咨臣以当世之事</a></li>
+            <li><a href="###">由是感激，遂许先帝以驱驰</a></li>
+            <li><a href="###">后值倾覆，受任于败军之际</a></li>
+            <li><a href="###">奉命于危难之间</a></li>
+            <li><a href="###">尔来二十有一年矣</a></li>
+            <li><a href="###">先帝知臣谨慎</a></li>
+            <li><a href="###">顾临崩寄臣以大事也</a></li>
+            <li><a href="###">受命以来，夙夜忧叹</a></li>
+            <li><a href="###">恐托付不效，以伤先帝之明</a></li>
+        </ul>
+    </div>
+
+    <script>
+        var $box = $("#box");
+        var $ul = $("#list")
+        var timer = null;
+        var iH = $("li").outerHeight();
+        console.log(iH);
+        autoScroll();
+        $box.hover(function () {
+            clearInterval(timer)
+        },function () {
+            autoScroll();
+        });
+        function autoScroll() {
+            timer = setInterval(function () {
+                $ul.animate({"top":-iH},function () {
+                    $("li").eq(0).appendTo($ul);
+                    $ul.css({"top":0});
+                });
+            },2000)
+        }
+    </script>
+</body>
+</html>

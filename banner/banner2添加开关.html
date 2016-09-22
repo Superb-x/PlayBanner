@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{margin: 0;padding: 0;}
+        #box{width: 100%;height: auto;overflow: hidden}
+        .wrap{width:640px;height: 360px;margin: 20px auto;border: 2px solid #ccc;overflow: hidden;position: relative;}
+        .wrap:hover a{display: block}
+        #list{width: 5120px;height: 360px;position: absolute;left: 0;padding: 0;}
+        #list img{width: 100%;height: 100%;}
+        #list li {float: left;width: 640px;height: 360px;list-style: none;}
+        /*左右点击的标签*/
+        .wrap a{display: none;position: absolute;width: 50px;height: 50px;background: rgba(211, 211, 211, 0.25);line-height: 50px;font-weight: bold;font-size: 36px;text-decoration: none;text-align: center;color: #f7f7f7;}
+        .wrap a:hover{text-shadow: 0 0 3px;color: #fff;}
+        #prev{left: 0;top: 50%;margin-top: -25px;}
+        #next{right: 0;top: 50%;margin-top: -25px;}
+        /*底部小圆点*/
+        #buttons{width: 150px;height:30px;position: absolute;bottom: 5px;left: 50%;margin-left: -75px;}
+        #buttons span{float: left;width: 20px;height: 20px;border-radius: 50%;background:rgba(211,211,211,.5);text-align: center;margin: 0 5px;font-family: 'Microsoft YaHei';cursor: pointer;}
+        #buttons .selected{background:#c81623;color:#fff;}
+    </style>
+    <script src="../../jquery-1.7.2.min.js"></script>
+</head>
+<body>
+<div id="box">
+    <div class="wrap">
+        <ul id="list">
+            <li><img src="img/asus_and_intel2_1.jpg" alt="1"></li>
+            <li><img src="img/asus_and_intel2_2.jpg" alt="2"></li>
+            <li><img src="img/asus_and_intel2_3.jpg" alt="3"></li>
+            <li><img src="img/asus_and_intel2_6.jpg" alt="4"></li>
+            <li><img src="img/asus_and_intel2_8.jpg" alt="5"></li>
+        </ul>
+        <div id="buttons">
+            <span value="1">1</span>
+            <span value="2">2</span>
+            <span value="3">3</span>
+            <span value="4">4</span>
+            <span value="5">5</span>
+        </div>
+        <a href="javascript:;" id="next">&gt</a>
+        <a href="javascript:;" id="prev">&lt</a>
+    </div>
+</div>
+    <script>
+        var $buttons = $("#buttons span");
+        var $wrap = $(".wrap");
+        var $list = $("#list");
+        
+        var $iW = $("#list li").outerWidth();
+        var len = $buttons.length;
+        var iNow = 0;
+        var timer = null;
+        var oSwitch = true;
+
+        /*当鼠标滑到盒子上时控制定时器的启停*/
+        $wrap.mouseover(function () {
+            clearInterval(timer);
+        });
+        $wrap.mouseout(function () {
+            autoPlay();
+        });
+        //调用自动播放
+        autoPlay();
+        //样式初始化给在最后添加一张图片
+        $buttons.eq(iNow).addClass("selected");
+        var src = $list.eq(0).find("img").attr("src");
+        $('<li><img src="'+src+'"></li>').appendTo($list);
+        //单击右侧箭头
+        $("#next").click(function () {
+                if (!oSwitch){
+                    return;
+                }
+                if(iNow >= len){
+                    iNow = 0;
+                    $list.css({"left":0})
+                }
+                iNow++;
+                console.log(iNow);
+                changeView();
+
+        });
+        $("#prev").click(function () {
+                if(!oSwitch){
+                    return;
+                }
+                if(iNow <= 0){
+                    iNow = len;
+                    $list.css({"left": -iNow*$iW})
+                }
+                iNow--;
+                changeView();
+
+        });
+        //小按钮的点击事件
+        $buttons.click(function () {
+            iNow = $(this).index();
+            changeView();
+        });
+        function changeView() {
+            oSwitch = false;
+            $list.animate({"left":-$iW*iNow},function () {
+                oSwitch = true;
+            });
+            $buttons.removeClass("selected").eq(iNow%len).addClass("selected");//取模的意思是当INow==len时，要取到下标为零的小按钮
+        }
+        //自动播放
+        function autoPlay() {
+            timer = setInterval(function () {
+                if(!$list.is(":animated")){
+                    if(iNow >= len){
+                        iNow = 0;
+                        $list.css({"left":0})
+                    }
+                    iNow++;
+                    console.log(iNow);
+                    changeView();
+                }
+            },2000)
+        }
+    </script>
+</body>
+</html>
